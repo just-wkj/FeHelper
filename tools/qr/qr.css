@@ -1,0 +1,37 @@
+/* ===== QR 生成 ===== */
+.qr-gen-layout { display: flex; gap: 16px; padding: 16px 24px; height: calc(100vh - 120px); }
+.qr-gen-input { flex: 1; display: flex; }
+.qr-gen-input textarea {
+  width: 100%; padding: 14px; border: 1px solid var(--mx-border); border-radius: 12px;
+  resize: none; outline: none; font-size: 14px; line-height: 1.7; background: #fff;
+}
+.qr-gen-input textarea:focus { border-color: var(--mx-primary); }
+.qr-gen-side { width: 320px; display: flex; flex-direction: column; gap: 12px; }
+.qr-gen-opts { display: flex; gap: 12px; }
+.qr-gen-opts label { flex: 1; font-size: 12px; color: var(--mx-text-light); display: flex; flex-direction: column; gap: 4px; }
+.qr-gen-opts select {
+  padding: 8px 10px; border-radius: 8px; border: 1px solid var(--mx-border);
+  background: #fff; font-size: 13px;
+}
+.qr-preview {
+  flex: 1; background: #fff; border: 1px solid var(--mx-border); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; overflow: auto; padding: 16px;
+}
+.qr-preview img, .qr-preview canvas { max-width: 100%; max-height: 100%; display: block; }
+.qr-empty { color: var(--mx-text-light); font-size: 13px; }
+.qr-gen-actions { display: flex; gap: 8px; }
+
+/* ===== QR 解码 ===== */
+.decode-img-wrap {
+  background: #fff; border: 1px solid var(--mx-border); border-radius: 12px;
+  padding: 12px; margin: 24px 0 12px; text-align: center;
+  display: flex; align-items: center; justify-content: center; min-height: 100px;
+  max-height: 280px; overflow: auto;
+}
+.decode-img-wrap img { max-width: 100%; max-height: 256px; border-radius: 6px; }
+.decode-out {
+  background: #fff; border: 1px solid var(--mx-border); border-radius: 12px;
+  padding: 14px; font-family: var(--mx-mono); font-size: 13px; line-height: 1.7;
+  white-space: pre-wrap; word-break: break-all; min-height: 60px;
+}
+.pane-head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }

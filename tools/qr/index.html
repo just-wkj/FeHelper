@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>二维码工具 - 莫一兮工具箱</title>
+  <link rel="stylesheet" href="../../shared/common.css">
+  <link rel="stylesheet" href="qr.css">
+</head>
+<body>
+  <div class="mx-header">
+    <button type="button" class="back" id="backBtn" title="返回菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1>二维码工具</h1>
+    <span class="sub">生成 / 解码</span>
+  </div>
+
+  <div class="mx-tabs" id="qrTabs">
+    <button data-mx-tab="gen" class="active">生成二维码</button>
+    <button data-mx-tab="decode">识别解码</button>
+  </div>
+
+  <!-- 生成 -->
+  <div class="mx-tab-panel active" data-mx-panel="gen">
+    <div class="qr-gen-layout">
+      <div class="qr-gen-input">
+        <textarea id="genText" placeholder="输入文本或网址，自动生成二维码...&#10;例如：https://www.baidu.com"></textarea>
+      </div>
+      <div class="qr-gen-side">
+        <div class="qr-gen-opts">
+          <label>尺寸
+            <select id="genSize">
+              <option value="128">128 px</option>
+              <option value="200">200 px</option>
+              <option value="256" selected>256 px</option>
+              <option value="384">384 px</option>
+              <option value="512">512 px</option>
+            </select>
+          </label>
+          <label>容错
+            <select id="genLevel">
+              <option value="L">L (7%)</option>
+              <option value="M" selected>M (15%)</option>
+              <option value="Q">Q (25%)</option>
+              <option value="H">H (30%)</option>
+            </select>
+          </label>
+        </div>
+        <div class="qr-preview" id="qrPreview">
+          <div class="qr-empty">输入内容后会在此预览二维码</div>
+        </div>
+        <div class="qr-gen-actions">
+          <button class="mx-btn primary" id="dlPng">下载 PNG</button>
+          <button class="mx-btn" id="copyImg">复制图片</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 解码 -->
+  <div class="mx-tab-panel" data-mx-panel="decode">
+    <div class="mx-dropzone" id="dropZone">
+      <div class="dz-icon">🖼️</div>
+      <div>点击选择 / 拖入 / <b>粘贴 (Ctrl+V)</b> 含二维码的图片</div>
+      <div class="dz-hint">支持 PNG / JPG / BMP / WEBP，最大 10MB · 也可直接 Ctrl+V 粘贴截图</div>
+    </div>
+    <div class="mx-container" id="decodeResult" style="display:none;">
+      <div class="decode-img-wrap">
+        <img id="decodeImg" alt="待识别图片">
+      </div>
+      <div class="pane-head-row">
+        <span class="mx-muted">识别结果</span>
+      </div>
+      <pre id="decodeText" class="decode-out"></pre>
+      <div style="margin-top:12px;">
+        <button class="mx-btn primary" id="copyDecode">复制文本</button>
+        <button class="mx-btn" id="reDecode">重新选择</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/common.js"></script>
+  <script src="../../libs/qrcode.min.js"></script>
+  <script src="../../libs/jsQR.js"></script>
+  <script src="qr.js"></script>
+</body>
+</html>

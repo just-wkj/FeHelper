@@ -1,0 +1,21 @@
+.ex-tabs { display: flex; gap: 4px; padding: 0 24px; background: #fff; border-bottom: 1px solid var(--mx-border); flex-wrap: wrap; }
+.ex-tabs button {
+  padding: 10px 16px; font-size: 13px; color: var(--mx-text-light);
+  border-bottom: 2px solid transparent; transition: all .15s;
+}
+.ex-tabs button:hover { color: var(--mx-primary); }
+.ex-tabs button.active { color: var(--mx-primary); border-bottom-color: var(--mx-primary); font-weight: 500; }
+
+.ex-opts {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 24px; font-size: 13px; color: var(--mx-text-light);
+  background: #fff; border-bottom: 1px solid var(--mx-border);
+}
+.ex-opts label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.ex-opts input[type=checkbox] { cursor: pointer; }
+.ex-opts .spacer { flex: 1; }
+
+.ex-layout { height: calc(100vh - 200px); }
+.pane-actions { display: flex; gap: 4px; }
+#previewBody { padding: 0; }
+#jsonOut { background: #fafbfc; }

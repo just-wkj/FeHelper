@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>JSON 美化 - 莫一兮工具箱</title>
+  <link rel="stylesheet" href="../../shared/common.css">
+  <link rel="stylesheet" href="json.css">
+</head>
+<body>
+  <div class="mx-header">
+    <button type="button" class="back" id="backBtn" title="返回菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1>JSON 美化</h1>
+    <span class="sub">格式化 / 校验 / 树形</span>
+  </div>
+
+  <div class="mx-toolbar">
+    <button class="mx-btn primary" id="btnFormat">格式化</button>
+    <select id="indent">
+      <option value="2" selected>2 空格</option>
+      <option value="4">4 空格</option>
+      <option value="\t">Tab</option>
+    </select>
+    <button class="mx-btn" id="btnMinify">压缩</button>
+    <button class="mx-btn" id="btnValidate">校验</button>
+    <button class="mx-btn" id="btnEscape">转义</button>
+    <button class="mx-btn" id="btnUnescape">反转义</button>
+    <span class="spacer"></span>
+    <div class="view-switch">
+      <button class="mx-btn ghost active" data-view="text">文本视图</button>
+      <button class="mx-btn ghost" data-view="tree">树形视图</button>
+    </div>
+  </div>
+
+  <div class="mx-error-banner" id="errBanner"></div>
+  <div class="mx-ok-banner" id="okBanner"></div>
+
+  <div class="mx-layout" id="layout">
+    <div class="mx-pane">
+      <div class="pane-head"><span>输入</span><span class="mx-muted" id="inputInfo"></span></div>
+      <div class="pane-body">
+        <textarea id="input" placeholder='粘贴 JSON 文本...&#10;例如：&#10;{"name":"莫一兮","tools":["qr","json"],"version":1}'></textarea>
+      </div>
+    </div>
+    <div class="mx-pane">
+      <div class="pane-head">
+        <span>输出</span>
+        <span class="pane-actions">
+          <button class="mx-btn ghost" id="btnCopy">复制</button>
+          <button class="mx-btn ghost" id="btnDownload">下载</button>
+          <button class="mx-btn ghost" id="btnUpload">上传</button>
+        </span>
+      </div>
+      <div class="pane-body" id="outputBody">
+        <pre class="jtext" id="output"></pre>
+        <div id="treeView" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
+
+  <script src="../../shared/common.js"></script>
+  <script src="../../shared/json-tree.js"></script>
+  <script src="json.js"></script>
+</body>
+</html>

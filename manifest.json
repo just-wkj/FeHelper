@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "莫一兮工具箱",
+  "version": "1.0.0",
+  "description": "前端开发工具箱：二维码编解码、JSON 美化、编码转换、Excel 转 JSON",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "莫一兮工具箱",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": []
+}

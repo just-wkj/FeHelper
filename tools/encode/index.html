@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>编码转换 - 莫一兮工具箱</title>
+  <link rel="stylesheet" href="../../shared/common.css">
+  <link rel="stylesheet" href="encode.css">
+</head>
+<body>
+  <div class="mx-header">
+    <button type="button" class="back" id="backBtn" title="返回菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1>编码转换</h1>
+    <span class="sub">Base64 · URL · HTML · Unicode · Hex · 哈希</span>
+  </div>
+
+  <div class="enc-bar">
+    <label>模式
+      <select id="mode">
+        <optgroup label="双向">
+          <option value="base64">Base64</option>
+          <option value="url">URL 编码</option>
+          <option value="html">HTML 实体</option>
+          <option value="unicode">Unicode (中文 ↔ \uXXXX)</option>
+          <option value="hex">Hex 十六进制</option>
+        </optgroup>
+        <optgroup label="哈希 (单向)">
+          <option value="md5">MD5</option>
+          <option value="sha1">SHA-1</option>
+          <option value="sha256">SHA-256</option>
+        </optgroup>
+      </select>
+    </label>
+    <div class="enc-dir">
+      <button class="mx-btn active" data-dir="encode">编码 ▶</button>
+      <button class="mx-btn" data-dir="decode">◀ 解码</button>
+    </div>
+    <span class="spacer"></span>
+    <button class="mx-btn" id="btnSwap" title="把输出填回输入">⇅ 交换</button>
+  </div>
+
+  <div class="mx-layout">
+    <div class="mx-pane">
+      <div class="pane-head"><span>输入</span><span class="mx-muted" id="inInfo"></span></div>
+      <div class="pane-body"><textarea id="input" placeholder="输入要转换的文本..."></textarea></div>
+    </div>
+    <div class="mx-pane">
+      <div class="pane-head">
+        <span>输出</span>
+        <span class="pane-actions">
+          <button class="mx-btn ghost" id="btnCopy">复制</button>
+          <button class="mx-btn ghost" id="btnClear">清空</button>
+        </span>
+      </div>
+      <div class="pane-body"><textarea id="output" readonly placeholder="转换结果..."></textarea></div>
+    </div>
+  </div>
+
+  <script src="../../shared/common.js"></script>
+  <script src="encode.js"></script>
+</body>
+</html>

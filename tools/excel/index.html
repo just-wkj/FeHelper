@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Excel 转 JSON - 莫一兮工具箱</title>
+  <link rel="stylesheet" href="../../shared/common.css">
+  <link rel="stylesheet" href="excel.css">
+</head>
+<body>
+  <div class="mx-header">
+    <button type="button" class="back" id="backBtn" title="返回菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1>Excel 转 JSON</h1>
+    <span class="sub">xlsx / xls / csv</span>
+  </div>
+
+  <!-- 上传区 -->
+  <div id="uploadStage">
+    <div class="mx-dropzone" id="dropZone">
+      <div class="dz-icon">📊</div>
+      <div>点击选择 / 拖入 Excel 或 CSV 文件</div>
+      <div class="dz-hint">支持 .xlsx .xls .csv，最大 10MB · 首行将作为字段名</div>
+    </div>
+  </div>
+
+  <!-- 结果区 -->
+  <div id="resultStage" style="display:none;">
+    <div class="ex-tabs" id="sheetTabs"></div>
+    <div class="ex-opts">
+      <label><input type="checkbox" id="trimHeader" checked> 去除字段名首尾空格</label>
+      <span class="spacer"></span>
+      <span class="mx-muted" id="meta"></span>
+      <button class="mx-btn ghost" id="btnReupload">重新上传</button>
+    </div>
+
+    <div class="mx-layout ex-layout">
+      <div class="mx-pane">
+        <div class="pane-head"><span>表格预览</span><span class="mx-muted">前 20 行</span></div>
+        <div class="pane-body" id="previewBody"></div>
+      </div>
+      <div class="mx-pane">
+        <div class="pane-head">
+          <span>JSON 输出</span>
+          <span class="pane-actions">
+            <button class="mx-btn ghost" id="btnCopy">复制</button>
+            <button class="mx-btn ghost" id="btnDownload">下载 .json</button>
+          </span>
+        </div>
+        <div class="pane-body"><textarea id="jsonOut" readonly></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/common.js"></script>
+  <script src="../../libs/xlsx.full.min.js"></script>
+  <script src="excel.js"></script>
+</body>
+</html>

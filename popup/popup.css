@@ -1,0 +1,47 @@
+.pp-wrap { width: 340px; background: #fff; }
+.pp-header {
+  background: linear-gradient(135deg, #4e8cff 0%, #2dd4bf 100%);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 12px;
+  color: #fff;
+}
+.pp-logo {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(255,255,255,0.22);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 600; flex-shrink: 0;
+}
+.pp-name { font-size: 16px; font-weight: 600; }
+.pp-sub { font-size: 11px; opacity: .85; margin-top: 2px; }
+
+.pp-group-label {
+  padding: 12px 20px 6px; font-size: 11px; color: #9aa6b5;
+  font-weight: 500; letter-spacing: .5px;
+}
+.pp-list { padding: 0 12px 8px; }
+.pp-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  transition: background .12s;
+}
+.pp-item:hover { background: #f0f6ff; }
+.pp-item .icon {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff;
+}
+.pp-item .info { flex: 1; min-width: 0; }
+.pp-item .name { font-size: 14px; font-weight: 500; color: #2c3e50; }
+.pp-item .desc { font-size: 11px; color: #9aa6b5; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp-item .arrow { color: #c8d0db; font-size: 14px; }
+
+/* 工具图标配色 */
+.ic-qr { background: linear-gradient(135deg, #667eea, #764ba2); }
+.ic-json { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.ic-encode { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.ic-excel { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+.pp-footer {
+  text-align: center; padding: 10px; font-size: 11px; color: #b8c2cf;
+  border-top: 1px solid #f0f2f5;
+}

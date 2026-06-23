@@ -1,0 +1,33 @@
+# ===== 依赖与构建产物 =====
+node_modules/
+dist/
+build/
+*.zip
+*.crx
+*.pem
+
+# ===== 测试与临时文件 =====
+test-results/
+coverage/
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# ===== 编辑器 / IDE =====
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+Thumbs.db
+
+# ===== 本地配置（含密钥/个人偏好，不入库）=====
+.claude/
+.env
+.env.local
+*.local
+
+# ===== 第三方库的源码包（解压临时文件）=====
+libs/*.tar.gz
+libs/*.zip

@@ -1,0 +1,10 @@
+.pane-actions { display: flex; gap: 4px; }
+.view-switch { display: flex; gap: 0; }
+.view-switch .mx-btn.active { background: #eef2f7; color: var(--mx-primary); }
+
+#output { margin: 0; min-height: 100%; }
+#outputBody { display: flex; flex-direction: column; }
+#outputBody > #output { flex: 1; }
+.empty-out { padding: 20px; color: var(--mx-text-light); font-size: 13px; }
+
+.mx-toolbar select { width: auto; }

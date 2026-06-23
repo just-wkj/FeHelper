@@ -1,0 +1,13 @@
+.enc-bar {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--mx-border);
+}
+.enc-bar label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--mx-text-light); }
+.enc-bar select { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--mx-border); font-size: 13px; }
+.enc-dir { display: flex; gap: 4px; background: #eef2f7; padding: 3px; border-radius: 9px; }
+.enc-dir .mx-btn { padding: 6px 14px; border-radius: 6px; }
+.enc-dir .mx-btn.active { background: #fff; color: var(--mx-primary); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.pane-actions { display: flex; gap: 4px; }
+#input[readonly], #output[readonly] { background: #fafbfc; }
+
+.mx-layout.enc { height: calc(100vh - 168px); }
