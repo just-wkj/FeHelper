@@ -194,7 +194,7 @@ function initLsView() {
           { target: { tabId: tab.id }, func: func, args: args || [] },
           function (results) {
             if (chrome.runtime.lastError) { reject(new Error(chrome.runtime.lastError.message)); return; }
-            if (!results || results.length === 0) { reject(new Error('注入失败')); return; }
+            if (!results || results.length === 0) { reject(new Error('注入失败：无返回值')); return; }
             resolve(results[0].result);
           }
         );
@@ -202,24 +202,12 @@ function initLsView() {
     });
   }
 
-  function readItem(k) {
-    try { return { ok: true, value: localStorage.getItem(k) }; }
-    catch (e) { return { ok: false, error: e.message }; }
-  }
-  function readAll() {
-    try {
-      const items = {};
-      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); items[k] = localStorage.getItem(k); }
-      return { ok: true, items: items, count: localStorage.length };
-    } catch (e) { return { ok: false, error: e.message }; }
-  }
-
   function query() {
     const key = keyInput.value.trim();
     btnCopy.disabled = true; btnCopyAll.disabled = true; lastValue = ''; lastAllJson = '';
 
     if (key) {
-      inject(readItem, [key]).then(function (res) {
+      inject(window.__mxReadItem, [key]).then(function (res) {
         if (!res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res.error) + '</span>'; return; }
         if (res.value === null) { resultEl.innerHTML = '<span class="kv-empty">未找到 Key: ' + esc(key) + '</span>'; return; }
         resultEl.innerHTML =
@@ -232,7 +220,7 @@ function initLsView() {
         resultEl.innerHTML = '<span class="kv-empty">' + esc(err.message) + '</span>';
       });
     } else {
-      inject(readAll, []).then(function (res) {
+      inject(window.__mxReadAll, []).then(function (res) {
         if (!res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res.error) + '</span>'; return; }
         if (res.count === 0) { resultEl.innerHTML = '<span class="kv-empty">LocalStorage 为空</span>'; return; }
         let html = '<table><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>';
@@ -258,3 +246,23 @@ function initLsView() {
   btnCopy.addEventListener('click', function () { if (lastValue) MX.copy(lastValue); });
   btnCopyAll.addEventListener('click', function () { if (lastAllJson) MX.copy(lastAllJson); });
 }
+
+// ============================================================
+// 注入到目标页面的函数（必须是全局独立函数，不能是闭包，否则无法序列化）
+// ============================================================
+// 读取单个 localStorage key
+window.__mxReadItem = function (k) {
+  try { return { ok: true, value: localStorage.getItem(k) }; }
+  catch (e) { return { ok: false, error: e.message }; }
+};
+// 读取全部 localStorage
+window.__mxReadAll = function () {
+  try {
+    var items = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      items[key] = localStorage.getItem(key);
+    }
+    return { ok: true, items: items, count: localStorage.length };
+  } catch (e) { return { ok: false, error: e.message }; }
+};
