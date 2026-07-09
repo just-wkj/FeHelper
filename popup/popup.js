@@ -48,6 +48,9 @@ function openTab(id) {
 function switchView(viewId) {
   document.querySelectorAll('.pp-view').forEach(function (v) { v.style.display = 'none'; });
   document.getElementById(viewId).style.display = 'block';
+  // 切换到 cookie/ls 视图时自动列出全部，让用户一进来就看到数据
+  if (viewId === 'cookieView') { document.getElementById('cookieKey').value = ''; document.getElementById('cookieQuery').click(); }
+  if (viewId === 'lsView') { document.getElementById('lsKey').value = ''; document.getElementById('lsQuery').click(); }
 }
 document.getElementById('cookieBack').addEventListener('click', function () { switchView('menuView'); });
 document.getElementById('lsBack').addEventListener('click', function () { switchView('menuView'); });
@@ -55,7 +58,8 @@ document.getElementById('lsBack').addEventListener('click', function () { switch
 // ===== 获取当前激活标签页 =====
 function getActiveTab() {
   return new Promise(function (resolve) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    // lastFocusedWindow 指向用户最后聚焦的浏览器窗口（即点 popup 前所在的窗口）
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
       resolve(tabs[0] || null);
     });
   });
@@ -77,13 +81,22 @@ function initCookieView() {
   let lastValue = '', lastAllJson = '';
 
   getActiveTab().then(function (tab) {
-    if (tab && tab.url) { hostEl.textContent = new URL(tab.url).hostname; }
+    if (tab && tab.url) {
+      try { hostEl.textContent = new URL(tab.url).hostname; }
+      catch (e) { hostEl.textContent = tab.url.slice(0, 40); }
+    } else {
+      hostEl.textContent = '未检测到标签页';
+    }
   });
 
   function query() {
     getActiveTab().then(function (tab) {
-      if (!tab || !/^https?:\/\//.test(tab.url || '')) {
-        resultEl.innerHTML = '<span class="kv-empty">当前页不是 http/https 网站，无法读取 Cookie</span>';
+      if (!tab) {
+        resultEl.innerHTML = '<span class="kv-empty">未检测到活动标签页</span>';
+        return;
+      }
+      if (!tab.url || !/^https?:\/\//.test(tab.url)) {
+        resultEl.innerHTML = '<span class="kv-empty">当前页面协议非 http/https（' + esc(tab.url || '无URL') + '），无法读取 Cookie。<br>请在普通网页上使用。</span>';
         return;
       }
       const url = tab.url;
@@ -148,15 +161,20 @@ function initLsView() {
   let lastValue = '', lastAllJson = '';
 
   getActiveTab().then(function (tab) {
-    if (tab && tab.url) { hostEl.textContent = new URL(tab.url).hostname; }
+    if (tab && tab.url) {
+      try { hostEl.textContent = new URL(tab.url).hostname; }
+      catch (e) { hostEl.textContent = tab.url.slice(0, 40); }
+    } else {
+      hostEl.textContent = '未检测到标签页';
+    }
   });
 
   // 注入脚本到目标页
   function inject(func, args) {
     return new Promise(function (resolve, reject) {
       getActiveTab().then(function (tab) {
-        if (!tab) { reject(new Error('无活动标签页')); return; }
-        if (!/^https?:\/\//.test(tab.url || '')) { reject(new Error('当前页不是 http/https 网站')); return; }
+        if (!tab) { reject(new Error('未检测到活动标签页')); return; }
+        if (!tab.url || !/^https?:\/\//.test(tab.url)) { reject(new Error('当前页面协议非 http/https（' + (tab.url || '无URL') + '），请在普通网页上使用')); return; }
         chrome.scripting.executeScript(
           { target: { tabId: tab.id }, func: func, args: args || [] },
           function (results) {
