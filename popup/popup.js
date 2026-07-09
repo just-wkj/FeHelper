@@ -9,7 +9,7 @@ const TAB_TOOLS = [
 // 当前页面直接获取的工具（popup 内联）
 const INLINE_TOOLS = [
   { id: 'cookie',  icon: '🍪', cls: 'ic-cookie',  name: 'Cookie 获取',  desc: '读取当前页面的 Cookie' },
-  { id: 'storage', icon: '🗄',  cls: 'ic-storage', name: 'LocalStorage', desc: '读取当前页面的 LocalStorage' }
+  { id: 'ls',      icon: '🗄',  cls: 'ic-storage', name: 'LocalStorage', desc: '读取当前页面的 LocalStorage' }
 ];
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -17,17 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
   renderInlineTools();
   initCookieView();
   initLsView();
-  // 诊断信息：在菜单底部显示 API 可用性，帮助排查问题
-  const footer = document.querySelector('.pp-footer');
-  if (footer) {
-    const diag = document.createElement('div');
-    diag.style.cssText = 'font-size:10px;color:#c0c0c0;padding:4px 0 0;border-top:1px dashed #eee;margin-top:4px;';
-    const hasTabs = typeof chrome !== 'undefined' && chrome.tabs;
-    const hasCookies = typeof chrome !== 'undefined' && chrome.cookies;
-    const hasScripting = typeof chrome !== 'undefined' && chrome.scripting;
-    diag.textContent = 'API: tabs=' + (!!hasTabs) + ' cookies=' + (!!hasCookies) + ' scripting=' + (!!hasScripting);
-    footer.appendChild(diag);
-  }
 });
 
 // ===== 渲染菜单卡片 =====
@@ -59,7 +48,7 @@ function openTab(id) {
 function switchView(viewId) {
   document.querySelectorAll('.pp-view').forEach(function (v) { v.style.display = 'none'; });
   document.getElementById(viewId).style.display = 'block';
-  // 切换到 cookie/ls 视图时自动列出全部，让用户一进来就看到数据
+  // 切换到 cookie/ls 视图时自动列出全部
   if (viewId === 'cookieView') { document.getElementById('cookieKey').value = ''; document.getElementById('cookieQuery').click(); }
   if (viewId === 'lsView') { document.getElementById('lsKey').value = ''; document.getElementById('lsQuery').click(); }
 }
@@ -175,16 +164,6 @@ function initLsView() {
   const btnCopyAll = document.getElementById('lsCopyAll');
   let lastValue = '', lastAllJson = '';
 
-  // 在结果区底部加诊断信息
-  function showDiag() {
-    const hasReadAll = typeof window.__mxReadAll === 'function';
-    const hasReadItem = typeof window.__mxReadItem === 'function';
-    const diag = document.createElement('div');
-    diag.style.cssText = 'font-size:10px;color:#bbb;margin-top:8px;border-top:1px dashed #eee;padding-top:4px;';
-    diag.textContent = 'diag: readAll=' + hasReadAll + ' readItem=' + hasReadItem + ' scripting=' + (typeof chrome !== 'undefined' && !!chrome.scripting);
-    return diag;
-  }
-
   getActiveTab().then(function (tab) {
     if (tab && tab.url) {
       try { hostEl.textContent = new URL(tab.url).hostname; }
@@ -215,27 +194,24 @@ function initLsView() {
     const key = keyInput.value.trim();
     btnCopy.disabled = true; btnCopyAll.disabled = true; lastValue = ''; lastAllJson = '';
     resultEl.innerHTML = '<span class="kv-empty">查询中...</span>';
-    resultEl.appendChild(showDiag());
 
     if (key) {
       inject(window.__mxReadItem, [key]).then(function (res) {
-        if (!res || !res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res ? res.error : '无返回') + '</span>'; resultEl.appendChild(showDiag()); return; }
-        if (res.value === null) { resultEl.innerHTML = '<span class="kv-empty">未找到 Key: ' + esc(key) + '</span>'; resultEl.appendChild(showDiag()); return; }
+        if (!res || !res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res ? res.error : '无返回') + '</span>'; return; }
+        if (res.value === null) { resultEl.innerHTML = '<span class="kv-empty">未找到 Key: ' + esc(key) + '</span>'; return; }
         resultEl.innerHTML =
           '<div><span class="r-name">key:</span> ' + esc(key) + '</div>' +
           '<div><span class="r-name">value:</span> <span class="r-val">' + esc(res.value) + '</span></div>' +
           '<div class="r-meta">长度: ' + res.value.length + ' 字符</div>';
         lastValue = res.value;
         btnCopy.disabled = false;
-        resultEl.appendChild(showDiag());
       }).catch(function (err) {
         resultEl.innerHTML = '<span class="kv-empty">[err] ' + esc(err.message || err) + '</span>';
-        resultEl.appendChild(showDiag());
       });
     } else {
       inject(window.__mxReadAll, []).then(function (res) {
-        if (!res || !res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res ? res.error : '无返回') + '</span>'; resultEl.appendChild(showDiag()); return; }
-        if (res.count === 0) { resultEl.innerHTML = '<span class="kv-empty">LocalStorage 为空</span>'; resultEl.appendChild(showDiag()); return; }
+        if (!res || !res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res ? res.error : '无返回') + '</span>'; return; }
+        if (res.count === 0) { resultEl.innerHTML = '<span class="kv-empty">LocalStorage 为空</span>'; return; }
         let html = '<table><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>';
         Object.keys(res.items).forEach(function (k) {
           html += '<tr><td>' + esc(k) + '</td><td>' + esc(res.items[k]) + '</td></tr>';
@@ -244,10 +220,8 @@ function initLsView() {
         resultEl.innerHTML = html;
         lastAllJson = JSON.stringify(res.items, null, 2);
         btnCopyAll.disabled = false;
-        resultEl.appendChild(showDiag());
       }).catch(function (err) {
         resultEl.innerHTML = '<span class="kv-empty">[err] ' + esc(err.message || err) + '</span>';
-        resultEl.appendChild(showDiag());
       });
     }
   }
