@@ -40,8 +40,41 @@
 .ic-json { background: linear-gradient(135deg, #f093fb, #f5576c); }
 .ic-encode { background: linear-gradient(135deg, #4facfe, #00f2fe); }
 .ic-excel { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.ic-cookie { background: linear-gradient(135deg, #f6d365, #fda085); }
+.ic-storage { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #6d5b7b !important; }
 
 .pp-footer {
   text-align: center; padding: 10px; font-size: 11px; color: #b8c2cf;
   border-top: 1px solid #f0f2f5;
 }
+
+/* ===== 内联视图（Cookie/Storage）===== */
+.pp-view { width: 340px; }
+.pp-back {
+  background: rgba(255,255,255,0.22); border: none; color: #fff;
+  width: 28px; height: 28px; border-radius: 7px; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.pp-back:hover { background: rgba(255,255,255,0.35); }
+.pp-inline-body { padding: 14px; }
+.pp-field { display: flex; gap: 8px; margin-bottom: 12px; }
+.pp-field input {
+  flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--mx-border);
+  font-size: 13px; outline: none;
+}
+.pp-field input:focus { border-color: var(--mx-primary); }
+.pp-field .mx-btn { padding: 8px 14px; }
+.pp-result {
+  background: #f9fafb; border: 1px solid var(--mx-border); border-radius: 8px;
+  padding: 10px; font-family: var(--mx-mono); font-size: 12px; line-height: 1.6;
+  word-break: break-all; white-space: pre-wrap; max-height: 320px; overflow: auto; min-height: 60px;
+}
+.pp-actions { display: flex; gap: 8px; margin-top: 10px; }
+.pp-actions .mx-btn { padding: 6px 12px; font-size: 12px; }
+.kv-empty { color: var(--mx-text-light); font-family: -apple-system, sans-serif; }
+.pp-result .r-name { color: #6f42c1; font-weight: 500; }
+.pp-result .r-val { color: #032f62; }
+.pp-result .r-meta { color: var(--mx-text-light); font-size: 11px; }
+.pp-result table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.pp-result th, .pp-result td { border: 1px solid var(--mx-border); padding: 4px 6px; text-align: left; vertical-align: top; word-break: break-all; }
+.pp-result th { background: #f0f2f5; position: sticky; top: 0; font-family: -apple-system, sans-serif; }

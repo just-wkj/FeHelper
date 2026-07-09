@@ -4,6 +4,23 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
 
+## [1.1.0] - 2026-06-23
+
+### 新增
+
+- **Cookie 获取工具**
+  - 选择目标标签页（列出当前窗口所有 http/https 标签页）
+  - 输入 Cookie Key 自动获取值（300ms 防抖查询）
+  - 「列出全部」枚举目标网站所有 Cookie（表格展示 name/value/domain/path）
+  - 复制单个值 / 复制全部为 JSON
+- **LocalStorage 获取工具**
+  - 选择目标标签页，输入 Key 自动获取值
+  - 通过 `chrome.scripting.executeScript` 注入脚本读取页面 localStorage
+  - 「列出全部」枚举所有键值对
+  - 复制单个值 / 复制全部为 JSON
+- **权限变更**：新增 `cookies`、`scripting`、`tabs` 权限 + `host_permissions: http://*/*, https://*/*`
+- Popup 菜单新增两个工具卡片
+
 ## [1.0.0] - 2026-06-23
 
 ### 新增

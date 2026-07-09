@@ -1,26 +1,227 @@
 'use strict';
-const TOOLS = [
-  { id: 'qr',     icon: '⊟', cls: 'ic-qr',     name: '二维码工具',   desc: '生成二维码 / 图片识别解码' },
-  { id: 'json',   icon: '{ }', cls: 'ic-json',   name: 'JSON 美化',    desc: '格式化、压缩、校验、树形折叠' },
-  { id: 'encode', icon: '⇄',  cls: 'ic-encode', name: '编码转换',     desc: 'Base64 / URL / HTML / Unicode / Hex / 哈希' },
-  { id: 'excel',  icon: '▦',  cls: 'ic-excel',  name: 'Excel 转 JSON', desc: 'xlsx / xls / csv 解析导出' }
+// 新标签页打开的工具
+const TAB_TOOLS = [
+  { id: 'qr',      icon: '⊟',    cls: 'ic-qr',      name: '二维码工具',    desc: '生成二维码 / 图片识别解码' },
+  { id: 'json',    icon: '{ }',  cls: 'ic-json',    name: 'JSON 美化',     desc: '格式化、压缩、校验、树形折叠' },
+  { id: 'encode',  icon: '⇄',   cls: 'ic-encode',  name: '编码转换',      desc: 'Base64 / URL / HTML / Hex / 哈希' },
+  { id: 'excel',   icon: '▦',   cls: 'ic-excel',   name: 'Excel 转 JSON', desc: 'xlsx / xls / csv 解析导出' }
+];
+// 当前页面直接获取的工具（popup 内联）
+const INLINE_TOOLS = [
+  { id: 'cookie',  icon: '🍪', cls: 'ic-cookie',  name: 'Cookie 获取',  desc: '读取当前页面的 Cookie' },
+  { id: 'storage', icon: '🗄',  cls: 'ic-storage', name: 'LocalStorage', desc: '读取当前页面的 LocalStorage' }
 ];
 
 document.addEventListener('DOMContentLoaded', function () {
-  const list = document.getElementById('toolList');
-  TOOLS.forEach(function (t) {
-    const item = document.createElement('div');
-    item.className = 'pp-item';
-    item.innerHTML =
-      '<div class="icon ' + t.cls + '">' + t.icon + '</div>' +
-      '<div class="info"><div class="name">' + t.name + '</div><div class="desc">' + t.desc + '</div></div>' +
-      '<div class="arrow">›</div>';
-    item.addEventListener('click', function () { openTool(t.id); });
-    list.appendChild(item);
-  });
+  renderTabTools();
+  renderInlineTools();
+  initCookieView();
+  initLsView();
 });
 
-function openTool(id) {
-  const url = chrome.runtime.getURL('tools/' + id + '/index.html');
-  chrome.tabs.create({ url: url });
+// ===== 渲染菜单卡片 =====
+function renderTabTools() {
+  const list = document.getElementById('tabToolList');
+  TAB_TOOLS.forEach(function (t) { list.appendChild(makeItem(t, function () { openTab(t.id); })); });
+}
+function renderInlineTools() {
+  const list = document.getElementById('inlineToolList');
+  INLINE_TOOLS.forEach(function (t) {
+    list.appendChild(makeItem(t, function () { switchView(t.id + 'View'); }));
+  });
+}
+function makeItem(t, onClick) {
+  const item = document.createElement('div');
+  item.className = 'pp-item';
+  item.innerHTML =
+    '<div class="icon ' + t.cls + '">' + t.icon + '</div>' +
+    '<div class="info"><div class="name">' + t.name + '</div><div class="desc">' + t.desc + '</div></div>' +
+    '<div class="arrow">›</div>';
+  item.addEventListener('click', onClick);
+  return item;
+}
+function openTab(id) {
+  chrome.tabs.create({ url: chrome.runtime.getURL('tools/' + id + '/index.html') });
+}
+
+// ===== 视图切换 =====
+function switchView(viewId) {
+  document.querySelectorAll('.pp-view').forEach(function (v) { v.style.display = 'none'; });
+  document.getElementById(viewId).style.display = 'block';
+}
+document.getElementById('cookieBack').addEventListener('click', function () { switchView('menuView'); });
+document.getElementById('lsBack').addEventListener('click', function () { switchView('menuView'); });
+
+// ===== 获取当前激活标签页 =====
+function getActiveTab() {
+  return new Promise(function (resolve) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      resolve(tabs[0] || null);
+    });
+  });
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ============================================================
+// Cookie 视图
+// ============================================================
+function initCookieView() {
+  const keyInput = document.getElementById('cookieKey');
+  const resultEl = document.getElementById('cookieResult');
+  const hostEl = document.getElementById('cookieHost');
+  const btnCopy = document.getElementById('cookieCopy');
+  const btnCopyAll = document.getElementById('cookieCopyAll');
+  let lastValue = '', lastAllJson = '';
+
+  getActiveTab().then(function (tab) {
+    if (tab && tab.url) { hostEl.textContent = new URL(tab.url).hostname; }
+  });
+
+  function query() {
+    getActiveTab().then(function (tab) {
+      if (!tab || !/^https?:\/\//.test(tab.url || '')) {
+        resultEl.innerHTML = '<span class="kv-empty">当前页不是 http/https 网站，无法读取 Cookie</span>';
+        return;
+      }
+      const url = tab.url;
+      chrome.cookies.getAll({ url: url }, function (cookies) {
+        const key = keyInput.value.trim();
+        btnCopy.disabled = true; btnCopyAll.disabled = true; lastValue = ''; lastAllJson = '';
+
+        if (key) {
+          // 查单个
+          const found = cookies.filter(function (c) { return c.name === key; });
+          if (found.length === 0) {
+            resultEl.innerHTML = '<span class="kv-empty">未找到 Cookie: ' + esc(key) + '</span>';
+            return;
+          }
+          const c = found[0];
+          resultEl.innerHTML =
+            '<div><span class="r-name">name:</span> ' + esc(c.name) + '</div>' +
+            '<div><span class="r-name">value:</span> <span class="r-val">' + esc(c.value) + '</span></div>' +
+            '<div class="r-meta">domain: ' + esc(c.domain) + ' · path: ' + esc(c.path) + ' · httpOnly: ' + c.httpOnly + '</div>';
+          lastValue = c.value;
+          btnCopy.disabled = false;
+        } else {
+          // 列出全部
+          if (cookies.length === 0) {
+            resultEl.innerHTML = '<span class="kv-empty">该网站无 Cookie</span>';
+            return;
+          }
+          let html = '<table><thead><tr><th>Name</th><th>Value</th></tr></thead><tbody>';
+          const obj = {};
+          cookies.forEach(function (c) {
+            html += '<tr><td>' + esc(c.name) + '</td><td>' + esc(c.value) + '</td></tr>';
+            obj[c.name] = c.value;
+          });
+          html += '</tbody></table>';
+          resultEl.innerHTML = html;
+          lastAllJson = JSON.stringify(obj, null, 2);
+          btnCopyAll.disabled = false;
+        }
+      });
+    });
+  }
+
+  let timer = null;
+  keyInput.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(query, 300);
+  });
+  document.getElementById('cookieQuery').addEventListener('click', query);
+  btnCopy.addEventListener('click', function () { if (lastValue) MX.copy(lastValue); });
+  btnCopyAll.addEventListener('click', function () { if (lastAllJson) MX.copy(lastAllJson); });
+}
+
+// ============================================================
+// LocalStorage 视图
+// ============================================================
+function initLsView() {
+  const keyInput = document.getElementById('lsKey');
+  const resultEl = document.getElementById('lsResult');
+  const hostEl = document.getElementById('lsHost');
+  const btnCopy = document.getElementById('lsCopy');
+  const btnCopyAll = document.getElementById('lsCopyAll');
+  let lastValue = '', lastAllJson = '';
+
+  getActiveTab().then(function (tab) {
+    if (tab && tab.url) { hostEl.textContent = new URL(tab.url).hostname; }
+  });
+
+  // 注入脚本到目标页
+  function inject(func, args) {
+    return new Promise(function (resolve, reject) {
+      getActiveTab().then(function (tab) {
+        if (!tab) { reject(new Error('无活动标签页')); return; }
+        if (!/^https?:\/\//.test(tab.url || '')) { reject(new Error('当前页不是 http/https 网站')); return; }
+        chrome.scripting.executeScript(
+          { target: { tabId: tab.id }, func: func, args: args || [] },
+          function (results) {
+            if (chrome.runtime.lastError) { reject(new Error(chrome.runtime.lastError.message)); return; }
+            if (!results || results.length === 0) { reject(new Error('注入失败')); return; }
+            resolve(results[0].result);
+          }
+        );
+      });
+    });
+  }
+
+  function readItem(k) {
+    try { return { ok: true, value: localStorage.getItem(k) }; }
+    catch (e) { return { ok: false, error: e.message }; }
+  }
+  function readAll() {
+    try {
+      const items = {};
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); items[k] = localStorage.getItem(k); }
+      return { ok: true, items: items, count: localStorage.length };
+    } catch (e) { return { ok: false, error: e.message }; }
+  }
+
+  function query() {
+    const key = keyInput.value.trim();
+    btnCopy.disabled = true; btnCopyAll.disabled = true; lastValue = ''; lastAllJson = '';
+
+    if (key) {
+      inject(readItem, [key]).then(function (res) {
+        if (!res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res.error) + '</span>'; return; }
+        if (res.value === null) { resultEl.innerHTML = '<span class="kv-empty">未找到 Key: ' + esc(key) + '</span>'; return; }
+        resultEl.innerHTML =
+          '<div><span class="r-name">key:</span> ' + esc(key) + '</div>' +
+          '<div><span class="r-name">value:</span> <span class="r-val">' + esc(res.value) + '</span></div>' +
+          '<div class="r-meta">长度: ' + res.value.length + ' 字符</div>';
+        lastValue = res.value;
+        btnCopy.disabled = false;
+      }, function (err) {
+        resultEl.innerHTML = '<span class="kv-empty">' + esc(err.message) + '</span>';
+      });
+    } else {
+      inject(readAll, []).then(function (res) {
+        if (!res.ok) { resultEl.innerHTML = '<span class="kv-empty">读取失败: ' + esc(res.error) + '</span>'; return; }
+        if (res.count === 0) { resultEl.innerHTML = '<span class="kv-empty">LocalStorage 为空</span>'; return; }
+        let html = '<table><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>';
+        Object.keys(res.items).forEach(function (k) {
+          html += '<tr><td>' + esc(k) + '</td><td>' + esc(res.items[k]) + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        resultEl.innerHTML = html;
+        lastAllJson = JSON.stringify(res.items, null, 2);
+        btnCopyAll.disabled = false;
+      }, function (err) {
+        resultEl.innerHTML = '<span class="kv-empty">' + esc(err.message) + '</span>';
+      });
+    }
+  }
+
+  let timer = null;
+  keyInput.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(query, 300);
+  });
+  document.getElementById('lsQuery').addEventListener('click', query);
+  btnCopy.addEventListener('click', function () { if (lastValue) MX.copy(lastValue); });
+  btnCopyAll.addEventListener('click', function () { if (lastAllJson) MX.copy(lastAllJson); });
 }

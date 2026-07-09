@@ -7,17 +7,61 @@
 </head>
 <body>
   <div class="pp-wrap">
-    <div class="pp-header">
-      <div class="pp-logo">工</div>
-      <div class="pp-title">
-        <div class="pp-name">莫一兮工具箱</div>
-        <div class="pp-sub">前端开发常用小工具</div>
+    <!-- ===== 菜单视图 ===== -->
+    <div class="pp-view" id="menuView">
+      <div class="pp-header">
+        <div class="pp-logo">工</div>
+        <div class="pp-title">
+          <div class="pp-name">莫一兮工具箱</div>
+          <div class="pp-sub">前端开发常用小工具</div>
+        </div>
+      </div>
+      <div class="pp-group-label">新标签页打开</div>
+      <div class="pp-list" id="tabToolList"></div>
+      <div class="pp-group-label">当前页面直接获取</div>
+      <div class="pp-list" id="inlineToolList"></div>
+      <div class="pp-footer">v1.1.0 · 纯前端，数据不出本地</div>
+    </div>
+
+    <!-- ===== Cookie 视图 ===== -->
+    <div class="pp-view" id="cookieView" style="display:none;">
+      <div class="pp-header">
+        <button class="pp-back" id="cookieBack">‹</button>
+        <div class="pp-title"><div class="pp-name">Cookie 获取</div><div class="pp-sub" id="cookieHost"></div></div>
+      </div>
+      <div class="pp-inline-body">
+        <div class="pp-field">
+          <input type="text" id="cookieKey" placeholder="输入 Cookie Key（留空=列出全部）" autocomplete="off">
+          <button class="mx-btn primary" id="cookieQuery">查</button>
+        </div>
+        <div class="pp-result" id="cookieResult"><span class="kv-empty">输入 Key 查询，或留空列出全部</span></div>
+        <div class="pp-actions">
+          <button class="mx-btn ghost" id="cookieCopy" disabled>复制值</button>
+          <button class="mx-btn ghost" id="cookieCopyAll" disabled>复制全部</button>
+        </div>
       </div>
     </div>
-    <div class="pp-group-label">常用工具</div>
-    <div class="pp-list" id="toolList"></div>
-    <div class="pp-footer">v1.0.0 · 纯前端，数据不出本地</div>
+
+    <!-- ===== LocalStorage 视图 ===== -->
+    <div class="pp-view" id="lsView" style="display:none;">
+      <div class="pp-header">
+        <button class="pp-back" id="lsBack">‹</button>
+        <div class="pp-title"><div class="pp-name">LocalStorage</div><div class="pp-sub" id="lsHost"></div></div>
+      </div>
+      <div class="pp-inline-body">
+        <div class="pp-field">
+          <input type="text" id="lsKey" placeholder="输入 Key（留空=列出全部）" autocomplete="off">
+          <button class="mx-btn primary" id="lsQuery">查</button>
+        </div>
+        <div class="pp-result" id="lsResult"><span class="kv-empty">输入 Key 查询，或留空列出全部</span></div>
+        <div class="pp-actions">
+          <button class="mx-btn ghost" id="lsCopy" disabled>复制值</button>
+          <button class="mx-btn ghost" id="lsCopyAll" disabled>复制全部</button>
+        </div>
+      </div>
+    </div>
   </div>
+  <script src="../shared/common.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

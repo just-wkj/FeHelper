@@ -188,3 +188,32 @@ input, textarea { font-size: 14px; }
 .tbl-preview th, .tbl-preview td { border: 1px solid var(--mx-border); padding: 6px 10px; text-align: left; white-space: nowrap; }
 .tbl-preview th { background: #f5f7fa; position: sticky; top: 0; font-weight: 500; }
 .tbl-preview tr:nth-child(even) td { background: #fafbfc; }
+
+/* ===== Cookie/Storage 工具通用 ===== */
+.kv-layout { padding: 16px 24px; max-width: 1100px; margin: 0 auto; }
+.kv-target {
+  background: #fff; border: 1px solid var(--mx-border); border-radius: 12px;
+  padding: 14px 16px; margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
+}
+.kv-target label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--mx-text-light); }
+.kv-target select, .kv-target input {
+  padding: 9px 12px; border-radius: 8px; border: 1px solid var(--mx-border);
+  background: #fff; font-size: 13px; min-width: 240px;
+}
+.kv-target select { min-width: 200px; }
+.kv-result {
+  background: #fff; border: 1px solid var(--mx-border); border-radius: 12px; overflow: hidden;
+}
+.kv-result-head {
+  padding: 10px 14px; background: #fafbfc; border-bottom: 1px solid var(--mx-border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--mx-text-light); font-weight: 500;
+}
+.kv-result-head .actions { display: flex; gap: 4px; }
+.kv-result-body { padding: 14px; font-family: var(--mx-mono); font-size: 13px; line-height: 1.7; word-break: break-all; white-space: pre-wrap; max-height: 420px; overflow: auto; }
+.kv-empty { color: var(--mx-text-light); font-size: 13px; font-family: -apple-system, sans-serif; }
+.kv-list-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: var(--mx-mono); }
+.kv-list-table th, .kv-list-table td { border: 1px solid var(--mx-border); padding: 6px 10px; text-align: left; vertical-align: top; }
+.kv-list-table th { background: #f5f7fa; position: sticky; top: 0; font-weight: 500; font-family: -apple-system, sans-serif; }
+.kv-list-table td.kv-val { word-break: break-all; max-width: 500px; }
+.kv-list-table tr:hover td { background: #f0f6ff; }
