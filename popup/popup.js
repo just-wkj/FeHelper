@@ -17,6 +17,17 @@ document.addEventListener('DOMContentLoaded', function () {
   renderInlineTools();
   initCookieView();
   initLsView();
+  // 诊断信息：在菜单底部显示 API 可用性，帮助排查问题
+  const footer = document.querySelector('.pp-footer');
+  if (footer) {
+    const diag = document.createElement('div');
+    diag.style.cssText = 'font-size:10px;color:#c0c0c0;padding:4px 0 0;border-top:1px dashed #eee;margin-top:4px;';
+    const hasTabs = typeof chrome !== 'undefined' && chrome.tabs;
+    const hasCookies = typeof chrome !== 'undefined' && chrome.cookies;
+    const hasScripting = typeof chrome !== 'undefined' && chrome.scripting;
+    diag.textContent = 'API: tabs=' + (!!hasTabs) + ' cookies=' + (!!hasCookies) + ' scripting=' + (!!hasScripting);
+    footer.appendChild(diag);
+  }
 });
 
 // ===== 渲染菜单卡片 =====
@@ -56,10 +67,14 @@ document.getElementById('cookieBack').addEventListener('click', function () { sw
 document.getElementById('lsBack').addEventListener('click', function () { switchView('menuView'); });
 
 // ===== 获取当前激活标签页 =====
+// 优先用 tabs.query，如果拿不到 url（权限不足），降级用 chrome.tabs.getCurrent
 function getActiveTab() {
   return new Promise(function (resolve) {
-    // lastFocusedWindow 指向用户最后聚焦的浏览器窗口（即点 popup 前所在的窗口）
-    chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
+    if (!chrome.tabs || !chrome.tabs.query) { resolve(null); return; }
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (chrome.runtime.lastError) {
+        console.warn('[getActiveTab] query error:', chrome.runtime.lastError.message);
+      }
       resolve(tabs[0] || null);
     });
   });
