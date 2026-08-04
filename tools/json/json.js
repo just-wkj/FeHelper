@@ -89,22 +89,37 @@ function locateError(str, err) {
   return err.message;
 }
 
-// ===== 格式化 =====
+// 将已解析的值渲染到输出区（文本/树形）。合法时不提示，仅清除残留的错误提示。
+function renderResult(value) {
+  if (currentView === 'tree') {
+    renderTree(value);
+  } else {
+    setOutputText(JSON.stringify(value, null, getIndent()));
+  }
+  clearBanner();
+}
+
+// ===== 格式化（手动，点击按钮时显示错误） =====
 document.getElementById('btnFormat').addEventListener('click', function () {
   const raw = input.value.trim();
   if (!raw) { showErr('输入为空'); setOutputEmpty(); return; }
   const r = tryParse(raw);
   if (!r.ok) { showErr('解析错误：' + locateError(raw, r.error)); setOutputEmpty(); return; }
-  const t0 = performance.now();
-  const formatted = JSON.stringify(r.value, null, getIndent());
-  const t1 = performance.now();
-  if (currentView === 'tree') {
-    renderTree(r.value);
-  } else {
-    setOutputText(formatted);
-  }
-  showOk('✓ 合法 JSON · 格式化耗时 ' + (t1 - t0).toFixed(1) + 'ms');
+  renderResult(r.value);
 });
+
+// ===== 输入时自动格式化（防抖；输入未完成、尚未构成合法 JSON 时静默不打扰） =====
+let autoFormatTimer = null;
+function scheduleAutoFormat() {
+  clearTimeout(autoFormatTimer);
+  autoFormatTimer = setTimeout(function () {
+    const raw = input.value.trim();
+    if (!raw) { clearBanner(); setOutputEmpty(); return; }
+    const r = tryParse(raw);
+    if (!r.ok) { clearBanner(); return; } // 仍在输入中，不弹错误
+    renderResult(r.value);
+  }, 300);
+}
 
 // ===== 压缩 =====
 document.getElementById('btnMinify').addEventListener('click', function () {
@@ -182,7 +197,7 @@ fileInput.addEventListener('change', function () {
   if (!fileInput.files[0]) return;
   const f = fileInput.files[0];
   if (f.size > 10 * 1024 * 1024) { MX.toast('文件超过 10MB', 'error'); return; }
-  MX.readFile(f, 'text').then(function (txt) { input.value = txt; updateInputInfo(); MX.toast('已加载文件', 'success'); });
+  MX.readFile(f, 'text').then(function (txt) { input.value = txt; updateInputInfo(); scheduleAutoFormat(); MX.toast('已加载文件', 'success'); });
   fileInput.value = '';
 });
 
@@ -190,7 +205,7 @@ function updateInputInfo() {
   const len = input.value.length;
   inputInfo.textContent = len ? len + ' 字符' : '';
 }
-input.addEventListener('input', function () { clearBanner(); updateInputInfo(); });
+input.addEventListener('input', function () { clearBanner(); updateInputInfo(); scheduleAutoFormat(); });
 document.getElementById('indent').addEventListener('change', function () {
   // 重新格式化已有输出
   const r = tryParse(input.value.trim());
