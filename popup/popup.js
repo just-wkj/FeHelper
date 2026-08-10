@@ -1,8 +1,8 @@
 'use strict';
 // 新标签页打开的工具
 const TAB_TOOLS = [
-  { id: 'qr',      icon: '⊟',    cls: 'ic-qr',      name: '二维码工具',    desc: '生成二维码 / 图片识别解码' },
   { id: 'json',    icon: '{ }',  cls: 'ic-json',    name: 'JSON 美化',     desc: '格式化、压缩、校验、树形折叠' },
+  { id: 'qr',      icon: '⊟',    cls: 'ic-qr',      name: '二维码工具',    desc: '生成二维码 / 图片识别解码' },
   { id: 'encode',  icon: '⇄',   cls: 'ic-encode',  name: '编码转换',      desc: 'Base64 / URL / HTML / Hex / 哈希' },
   { id: 'excel',   icon: '▦',   cls: 'ic-excel',   name: 'Excel 转 JSON', desc: 'xlsx / xls / csv 解析导出' }
 ];
